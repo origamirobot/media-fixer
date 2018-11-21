@@ -9,9 +9,16 @@ using System.Threading.Tasks;
 namespace MediaFixer
 {
 
-	class Program
+	/// <summary>
+	/// Main class for the MediaFixer application.
+	/// </summary>
+	public class Program
 	{
 
+		/// <summary>
+		/// Entry-point into this application.
+		/// </summary>
+		/// <param name="args">The arguments.</param>
 		static void Main(String[] args)
 		{
 			var pattern = "(.*)([19,20]\\d{3,})";
