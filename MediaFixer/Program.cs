@@ -12,7 +12,7 @@ namespace MediaFixer
 	class Program
 	{
 
-		static void Main(string[] args)
+		static void Main(String[] args)
 		{
 			var pattern = "(.*)([19,20]\\d{3,})";
 			var regex = new Regex(pattern);
