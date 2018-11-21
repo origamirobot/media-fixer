@@ -1,0 +1,6 @@
+D:\Projects\MovieRenamer\MovieRenamer\bin\Debug\MovieRenamer.exe.config
+D:\Projects\MovieRenamer\MovieRenamer\bin\Debug\MovieRenamer.exe
+D:\Projects\MovieRenamer\MovieRenamer\bin\Debug\MovieRenamer.pdb
+D:\Projects\MovieRenamer\MovieRenamer\obj\Debug\MovieRenamer.csprojResolveAssemblyReference.cache
+D:\Projects\MovieRenamer\MovieRenamer\obj\Debug\MovieRenamer.exe
+D:\Projects\MovieRenamer\MovieRenamer\obj\Debug\MovieRenamer.pdb
