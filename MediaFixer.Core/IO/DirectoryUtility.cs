@@ -40,7 +40,7 @@ namespace MediaFixer.Core.IO
 		/// <returns>
 		/// true if path refers to an existing directory; otherwise, false.
 		/// </returns>
-		public bool Exists(String path)
+		public Boolean Exists(String path)
 		{
 			return Directory.Exists(path);
 		}
@@ -349,6 +349,27 @@ namespace MediaFixer.Core.IO
 		}
 
 		/// <summary>
+		/// Gets the directory information.
+		/// </summary>
+		/// <param name="path">The path.</param>
+		/// <returns></returns>
+		public DirectoryInfo GetDirectoryInfo(String path)
+		{
+			return new DirectoryInfo(path);
+		}
+
+		/// <summary>
+		/// Gets the name of the directory.
+		/// </summary>
+		/// <param name="path">The path.</param>
+		/// <returns></returns>
+		public String GetDirectoryName(String path)
+		{
+			var di = GetDirectoryInfo(path);
+			return di.Name;
+		}
+
+		/// <summary>
 		/// Returns an enumerable collection of directory names that match a search pattern in a specified path, and optionally searches subdirectories.
 		/// </summary>
 		/// <param name="path">The directory to search.</param>
@@ -540,7 +561,7 @@ namespace MediaFixer.Core.IO
 		/// </summary>
 		/// <param name="path">The name of the directory to remove.</param>
 		/// <param name="recursive">true to remove directories, subdirectories, and files in path; otherwise, false</param>
-		public void Delete(String path, bool recursive)
+		public void Delete(String path, Boolean recursive)
 		{
 			Directory.Delete(path, recursive);
 		}

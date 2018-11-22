@@ -441,6 +441,19 @@ namespace MediaFixer.Core.IO
 		/// <param name="recursive">true to remove directories, subdirectories, and files in path; otherwise, false</param>
 		void Delete(String path, bool recursive);
 
+		/// <summary>
+		/// Gets the directory information.
+		/// </summary>
+		/// <param name="path">The path.</param>
+		/// <returns></returns>
+		DirectoryInfo GetDirectoryInfo(String path);
+
+		/// <summary>
+		/// Gets the name of the directory.
+		/// </summary>
+		/// <param name="path">The path.</param>
+		/// <returns></returns>
+		String GetDirectoryName(String path);
 	}
 
 }
