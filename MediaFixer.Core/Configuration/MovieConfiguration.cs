@@ -69,7 +69,7 @@ namespace MediaFixer.Core.Configuration
 		/// <summary>
 		/// Gets the regular expression used to detect movie names.
 		/// </summary>
-		public String MovieRegex => AppSettingsReader.ReadOptionalStringAppSetting(nameof(MovieRegex), @"(?<title>.*)(?<year>19|20\d{2})");
+		public String MovieRegex => AppSettingsReader.ReadOptionalStringAppSetting(nameof(MovieRegex), @"(?<title>.*)(?<year>19\d{2}|20\d{2})");
 
 		/// <summary>
 		/// Gets the movie characters to remove.
