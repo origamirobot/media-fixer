@@ -177,6 +177,51 @@ namespace MediaFixer.Core.Configuration
 
 		#endregion INTEGER METHODS
 
+
+		#region INTEGER METHODS
+
+
+		/// <summary>
+		/// Reads the Int64 value for the specified key from the specified config file
+		/// </summary>
+		/// <param name="key">The key to read the int value from.</param>
+		/// <param name="configFile">The configuration file to read the int value from.</param>
+		/// <returns>Returns the value of the key from the specified configuration file</returns>
+		Int64 ReadInt64AppSetting(String key, String configFile);
+
+		/// <summary>
+		/// Gets the Int64 value for a specified key. If the key is not present in the config; returns <paramref name="defaultValue"/>.
+		/// </summary>
+		/// <param name="key">The key to read the setting from.</param>
+		/// <param name="defaultValue">The default value to return if key isn't present.</param>
+		/// <returns>Returns the value of the key if present; otherwise, the default value</returns>
+		Int64 ReadOptionalInt64AppSetting(String key, Int64 defaultValue);
+
+		/// <summary>
+		/// Gets the Int64 value for a specified key. If the key is not present in the config; returns <paramref name="defaultValue" />.
+		/// </summary>
+		/// <param name="key">The key to read the setting from.</param>
+		/// <param name="configFile">The configuration file to read the int value from.</param>
+		/// <param name="defaultValue">The default value to return if key isn't present.</param>
+		/// <returns>
+		/// Returns the value of the key if present; otherwise, the default value
+		/// </returns>
+		Int64 ReadOptionalInt64AppSetting(String key, String configFile, Int64 defaultValue);
+
+		/// <summary>
+		/// Reads the Int64 value for the specified key directly from the web.config file
+		/// </summary>
+		/// <param name="key">The key to read the Int32 value from.</param>
+		/// <returns>
+		/// Returns the value of the key from the default configuration store.
+		/// </returns>
+		/// <exception cref="System.ApplicationException">Error reading the Int32 value from  + key +  in appSettings.</exception>
+		Int64 ReadInt64AppSettingFromDefaultStore(String key);
+
+
+		#endregion INTEGER METHODS
+
+
 		#region DOUBLE METHODS
 
 

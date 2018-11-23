@@ -17,7 +17,7 @@ namespace MediaFixer.Core.Extensions
 		/// <param name="name">The name.</param>
 		/// <exception cref="System.ArgumentNullException">di - Directory info to rename cannot be null</exception>
 		/// <exception cref="System.ArgumentException">New name cannot be null or blank - name</exception>
-		public static void RenameTo(this DirectoryInfo di, string name)
+		public static void RenameTo(this DirectoryInfo di, String name)
 		{
 			if (di == null)
 				throw new ArgumentNullException(nameof(di), "Directory info to rename cannot be null");

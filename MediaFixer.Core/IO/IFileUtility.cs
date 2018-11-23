@@ -353,6 +353,12 @@ namespace MediaFixer.Core.IO
 		/// <param name="encoding">The encoding to use.</param>
 		void WriteAllText(string path, string contents, Encoding encoding);
 
+		/// <summary>
+		/// Gets the size of the file.
+		/// </summary>
+		/// <param name="location">The location.</param>
+		/// <returns></returns>
+		Int64 GetFileSize(String location);
 	}
 
 }

@@ -100,9 +100,7 @@ namespace MediaFixer.Core.Configuration
 		{
 			foreach (var section in ConfigSections)
 			{
-				if (section == null)
-					continue;
-				var val = section.Elements.GetValue(key);
+				var val = section?.Elements.GetValue(key);
 				if (val != null)
 					return val;
 			}
@@ -140,7 +138,7 @@ namespace MediaFixer.Core.Configuration
 			var result = false;
 			try
 			{
-				System.Configuration.Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+				var config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
 				config.AppSettings.Settings.Remove(key);
 				var kvElem = new KeyValueConfigurationElement(key, value);
 				config.AppSettings.Settings.Add(kvElem);
@@ -156,7 +154,6 @@ namespace MediaFixer.Core.Configuration
 			{
 				System.Diagnostics.Debug.WriteLine(ex.ToString()); 
 			}
-			finally { } 
 			return result;
 		}
 
@@ -227,11 +224,14 @@ namespace MediaFixer.Core.Configuration
 		{
 			try
 			{
-				String keyValue = ReadAppSetting(key);
+				var keyValue = ReadAppSetting(key);
 				if (keyValue != null)
 					return keyValue;
 			}
-			catch { }
+			catch
+			{
+				// ignored
+			}
 
 			return defaultValue;
 		}
@@ -255,7 +255,11 @@ namespace MediaFixer.Core.Configuration
 				if (config != null)
 					return config.Elements.GetValue(key);
 			}
-			catch { }
+			catch
+			{
+				// ignored
+			}
+
 			// FALLBACK TO DEFAULT VALUE PROVIDED
 			return defaultValue;
 		}
@@ -283,8 +287,7 @@ namespace MediaFixer.Core.Configuration
 			{
 				try
 				{
-					Boolean val;
-					if (Boolean.TryParse(config.Elements.GetValue(key), out val))
+					if (Boolean.TryParse(config.Elements.GetValue(key), out var val))
 						return val;
 				}
 				catch (Exception ex)
@@ -308,8 +311,7 @@ namespace MediaFixer.Core.Configuration
 		{
 			try
 			{
-				Boolean val;
-				if (Boolean.TryParse(GetValue(key, typeof(String)) as String, out val))
+				if (Boolean.TryParse(GetValue(key, typeof(String)) as String, out var val))
 					return val;
 			}
 			catch (Exception ex)
@@ -331,15 +333,18 @@ namespace MediaFixer.Core.Configuration
 		{
 			try
 			{
-				String keyValue = ReadAppSetting(key);
+				var keyValue = ReadAppSetting(key);
 				if (keyValue != null)
 				{
-					Boolean val;
-					if (Boolean.TryParse(keyValue, out val))
+					if (Boolean.TryParse(keyValue, out var val))
 						return val;
 				}
 			}
-			catch { }
+			catch
+			{
+				// ignored
+			}
+
 			return defaultValue;
 		}
 
@@ -360,12 +365,15 @@ namespace MediaFixer.Core.Configuration
 				var config = GetConfigSection<IKeyValueSection>(configFile);
 				if (config != null)
 				{
-					Boolean val;
-					if (Boolean.TryParse(config.Elements.GetValue(key), out val))
+					if (Boolean.TryParse(config.Elements.GetValue(key), out var val))
 						return val;
 				}
 			}
-			catch { }
+			catch
+			{
+				// ignored
+			}
+
 			// FALLBACK TO DEFAULT VALUE PROVIDED
 			return defaultValue;
 		}
@@ -388,15 +396,18 @@ namespace MediaFixer.Core.Configuration
 		{
 			try
 			{
-				String keyValue = ReadAppSetting(key);
+				var keyValue = ReadAppSetting(key);
 				if (keyValue != null)
 				{
-					Int32 val;
-					if (Int32.TryParse(keyValue, out val))
+					if (Int32.TryParse(keyValue, out var val))
 						return val;
 				}
 			}
-			catch { }
+			catch
+			{
+				// ignored
+			}
+
 			return defaultValue;
 		}
 
@@ -413,15 +424,18 @@ namespace MediaFixer.Core.Configuration
 		{
 			try
 			{
-				String keyValue = ReadAppSetting(key);
+				var keyValue = ReadAppSetting(key);
 				if (keyValue != null)
 				{
-					Int32 val;
-					if (Int32.TryParse(keyValue, out val))
+					if (Int32.TryParse(keyValue, out var val))
 						return val;
 				}
 			}
-			catch { }
+			catch
+			{
+				// ignored
+			}
+
 			return defaultValue;
 		}
 
@@ -442,8 +456,7 @@ namespace MediaFixer.Core.Configuration
 			{
 				try
 				{
-					Int32 val;
-					if (Int32.TryParse(config.Elements.GetValue(key), out val))
+					if (Int32.TryParse(config.Elements.GetValue(key), out var val))
 						return val;
 				}
 				catch (Exception ex)
@@ -467,8 +480,7 @@ namespace MediaFixer.Core.Configuration
 		{
 			try
 			{
-				Int32 val;
-				if (Int32.TryParse(GetValue(key, typeof(String)) as String, out val))
+				if (Int32.TryParse(GetValue(key, typeof(String)) as String, out var val))
 					return val;
 			}
 			catch (Exception ex)
@@ -480,6 +492,118 @@ namespace MediaFixer.Core.Configuration
 
 
 		#endregion INTEGER SETTINGS READERS
+
+		#region INT64 SETTINGS READERS
+
+
+		/// <summary>
+		/// Gets the Int64 value for a specified key. If the key is not present in the config; returns <paramref name="defaultValue" />.
+		/// </summary>
+		/// <param name="key">The key to read the setting from.</param>
+		/// <param name="defaultValue">The default value to return if key isn't present.</param>
+		/// <returns>
+		/// Returns the value of the key if present; otherwise, the default value
+		/// </returns>
+		public Int64 ReadOptionalInt64AppSetting(String key, Int64 defaultValue)
+		{
+			try
+			{
+				var keyValue = ReadAppSetting(key);
+				if (keyValue != null)
+				{
+					if (Int64.TryParse(keyValue, out var val))
+						return val;
+				}
+			}
+			catch
+			{
+				// ignored
+			}
+
+			return defaultValue;
+		}
+
+		/// <summary>
+		/// Gets the Int64 value for a specified key. If the key is not present in the config; returns <paramref name="defaultValue" />.
+		/// </summary>
+		/// <param name="key">The key to read the setting from.</param>
+		/// <param name="configFile">The configuration file to read the Int64 value from.</param>
+		/// <param name="defaultValue">The default value to return if key isn't present.</param>
+		/// <returns>
+		/// Returns the value of the key if present; otherwise, the default value
+		/// </returns>
+		public Int64 ReadOptionalInt64AppSetting(String key, String configFile, Int64 defaultValue)
+		{
+			try
+			{
+				var keyValue = ReadAppSetting(key);
+				if (keyValue != null)
+				{
+					if (Int64.TryParse(keyValue, out var val))
+						return val;
+				}
+			}
+			catch
+			{
+				// ignored
+			}
+
+			return defaultValue;
+		}
+
+		/// <summary>
+		/// Reads the Int64 value for the specified key from the specified config file
+		/// </summary>
+		/// <param name="key">The key to read the Int64 value from.</param>
+		/// <param name="configFile">The configuration file to read the Int32 value from.</param>
+		/// <returns>
+		/// Returns the value of the key from the specified configuration file
+		/// </returns>
+		/// <exception cref="System.ApplicationException"></exception>
+		public Int64 ReadInt64AppSetting(String key, String configFile)
+		{
+			// TRY TO READ VALUE FROM SPECIFIED CONFIGURATION FILE
+			var config = GetConfigSection<IKeyValueSection>(configFile);
+			if (config != null)
+			{
+				try
+				{
+					if (Int64.TryParse(config.Elements.GetValue(key), out var val))
+						return val;
+				}
+				catch (Exception ex)
+				{
+					throw new ApplicationException($"Error reading the Int64 value from {key} in {configFile} config file.", ex);
+				}
+			}
+			// FALLBACK TO NORMAL WEB.CONFIG IF AVAILABLE
+			return ReadInt64AppSettingFromDefaultStore(key);
+		}
+
+		/// <summary>
+		/// Reads the Int64 value for the specified key directly from the web.config file
+		/// </summary>
+		/// <param name="key">The key to read the Int64 value from.</param>
+		/// <returns>
+		/// Returns the value of the key from the default configuration store.
+		/// </returns>
+		/// <exception cref="System.ApplicationException">Error reading the Int64 value from  + key +  in appSettings.</exception>
+		public Int64 ReadInt64AppSettingFromDefaultStore(String key)
+		{
+			try
+			{
+				if (Int64.TryParse(GetValue(key, typeof(String)) as String, out var val))
+					return val;
+			}
+			catch (Exception ex)
+			{
+				throw new ApplicationException("Error reading the Int64 value from " + key + " in appSettings.", ex);
+			}
+			throw new ApplicationException("Error reading the Int64 value from " + key + " in appSettings.");
+		}
+
+
+		#endregion INT64 SETTINGS READERS
 
 		#region INTEGER ARRAY SETTINGS READERS
 
@@ -501,16 +625,19 @@ namespace MediaFixer.Core.Configuration
 				if (keyValue != null)
 				{
 					var split = keyValue.Split(',');
-					foreach(var item in split)
+					foreach (var item in split)
 					{
-						var val = 0;
-						if (Int32.TryParse(item, out val))
+						if (Int32.TryParse(item, out var val))
 							list.Add(val);
 					}
 					return list.ToArray();
 				}
 			}
-			catch { }
+			catch
+			{
+				// ignored
+			}
+
 			return defaultValue;
 		}
 
@@ -527,28 +654,27 @@ namespace MediaFixer.Core.Configuration
 		{
 			// TRY TO READ VALUE FROM SPECIFIED CONFIGURATION FILE
 			var config = GetConfigSection<IKeyValueSection>(configFile);
-			if (config != null)
-			{
-				try
-				{
-					var list = new List<Int32>();
-					var val = config.Elements.GetValue(key);
-					var split = val.Split(',');
-					foreach (var item in split)
-					{
-						var i = 0;
-						if (Int32.TryParse(item, out i))
-							list.Add(i);
-					}
-					return list.ToArray();
-				}
-				catch (Exception ex)
-				{
-					throw new ApplicationException($"Error reading the Int32 value from {key} in {configFile} config file.", ex);
-				}
-			}
+
 			// FALLBACK TO NORMAL WEB.CONFIG IF AVAILABLE
-			return ReadIntArrayAppSettingFromDefaultStore(key);
+			if (config == null)
+				return ReadIntArrayAppSettingFromDefaultStore(key);
+
+			try
+			{
+				var list = new List<Int32>();
+				var val = config.Elements.GetValue(key);
+				var split = val.Split(',');
+				foreach (var item in split)
+				{
+					if (Int32.TryParse(item, out var i))
+						list.Add(i);
+				}
+				return list.ToArray();
+			}
+			catch (Exception ex)
+			{
+				throw new ApplicationException($"Error reading the Int32 value from {key} in {configFile} config file.", ex);
+			}
 		}
 
 		/// <summary>
@@ -566,7 +692,7 @@ namespace MediaFixer.Core.Configuration
 				var list = new List<Int32>();
 				var val = GetValue(key, typeof(String)) as String;
 				var split = val.Split(',');
-				foreach(var item in split)
+				foreach (var item in split)
 				{
 					var i = 0;
 					if (Int32.TryParse(item, out i))
@@ -599,19 +725,18 @@ namespace MediaFixer.Core.Configuration
 		{
 			// TRY TO READ VALUE FROM SPECIFIED CONFIGURATION FILE
 			var config = GetConfigSection<IKeyValueSection>(configFile);
-			if (config != null)
+			if (config == null)
+				return ReadIntAppSettingFromDefaultStore(key);
+			try
 			{
-				try
-				{
-					Double val;
-					if (Double.TryParse(config.Elements.GetValue(key), out val))
-						return val;
-				}
-				catch (Exception ex)
-				{
-					throw new ApplicationException($"Error reading the Double value from {key} in {configFile} config file.", ex);
-				}
+				if (Double.TryParse(config.Elements.GetValue(key), out var val))
+					return val;
 			}
+			catch (Exception ex)
+			{
+				throw new ApplicationException($"Error reading the Double value from {key} in {configFile} config file.", ex);
+			}
+
 			// FALLBACK TO NORMAL WEB.CONFIG IF AVAILABLE
 			return ReadIntAppSettingFromDefaultStore(key);
 		}
@@ -628,8 +753,7 @@ namespace MediaFixer.Core.Configuration
 		{
 			try
 			{
-				Double val;
-				if (Double.TryParse(GetValue(key, typeof(String)) as String, out val))
+				if (Double.TryParse(GetValue(key, typeof(String)) as String, out var val))
 					return val;
 			}
 			catch (Exception ex)
@@ -651,15 +775,18 @@ namespace MediaFixer.Core.Configuration
 		{
 			try
 			{
-				String keyValue = ReadAppSetting(key);
+				var keyValue = ReadAppSetting(key);
 				if (keyValue != null)
 				{
-					Double val;
-					if (Double.TryParse(keyValue, out val))
+					if (Double.TryParse(keyValue, out var val))
 						return val;
 				}
 			}
-			catch { }
+			catch
+			{
+				// ignored
+			}
+
 			return defaultValue;
 		}
 
@@ -680,12 +807,15 @@ namespace MediaFixer.Core.Configuration
 				var config = GetConfigSection<IKeyValueSection>(configFile);
 				if (config != null)
 				{
-					Double val;
-					if (Double.TryParse(config.Elements.GetValue(key), out val))
+					if (Double.TryParse(config.Elements.GetValue(key), out var val))
 						return val;
 				}
 			}
-			catch { }
+			catch
+			{
+				// ignored
+			}
+
 			// FALL BACK TO DEFAULT VALUE PROVIDED
 			return defaultValue;
 		}
@@ -707,18 +837,17 @@ namespace MediaFixer.Core.Configuration
 		{
 			// TRY TO READ VALUE FROM SPECIFIED CONFIGURATION FILE
 			var config = GetConfigSection<IKeyValueSection>(configFile);
-			if (config != null)
+			if (config == null)
+				return ReadIntAppSettingFromDefaultStore(key);
+
+			try
 			{
-				try
-				{
-					Single val;
-					if (Single.TryParse(config.Elements.GetValue(key), out val))
-						return val;
-				}
-				catch (Exception ex)
-				{
-					throw new ApplicationException($"Error reading the Double value from {key} in {configFile} config file.", ex);
-				}
+				if (Single.TryParse(config.Elements.GetValue(key), out var val))
+					return val;
+			}
+			catch (Exception ex)
+			{
+				throw new ApplicationException($"Error reading the Double value from {key} in {configFile} config file.", ex);
 			}
 			// FALLBACK TO NORMAL WEB.CONFIG IF AVAILABLE
 			return ReadIntAppSettingFromDefaultStore(key);
@@ -734,8 +863,7 @@ namespace MediaFixer.Core.Configuration
 		{
 			try
 			{
-				Single val;
-				if (Single.TryParse(GetValue(key, typeof(String)) as String, out val))
+				if (Single.TryParse(GetValue(key, typeof(String)) as String, out var val))
 					return val;
 			}
 			catch (Exception ex)
@@ -758,12 +886,15 @@ namespace MediaFixer.Core.Configuration
 				var keyValue = ReadAppSetting(key);
 				if (keyValue != null)
 				{
-					Single val;
-					if (Single.TryParse(keyValue, out val))
+					if (Single.TryParse(keyValue, out var val))
 						return val;
 				}
 			}
-			catch { }
+			catch
+			{
+				// ignored
+			}
+
 			return defaultValue;
 		}
 
@@ -784,12 +915,15 @@ namespace MediaFixer.Core.Configuration
 				var config = GetConfigSection<IKeyValueSection>(configFile);
 				if (config != null)
 				{
-					Single val;
-					if (Single.TryParse(config.Elements.GetValue(key), out val))
+					if (Single.TryParse(config.Elements.GetValue(key), out var val))
 						return val;
 				}
 			}
-			catch { }
+			catch
+			{
+				// ignored
+			}
+
 			// FALL BACK TO DEFAULT VALUE PROVIDED
 			return defaultValue;
 		}
@@ -814,18 +948,17 @@ namespace MediaFixer.Core.Configuration
 		{
 			// TRY TO READ VALUE FROM SPECIFIED CONFIGURATION FILE
 			var config = GetConfigSection<IKeyValueSection>(configFile);
-			if (config != null)
+			if (config == null)
+				return ReadDecimalAppSettingFromDefaultStore(key);
+
+			try
 			{
-				try
-				{
-					Decimal val;
-					if (Decimal.TryParse(config.Elements.GetValue(key), out val))
-						return val;
-				}
-				catch (Exception ex)
-				{
-					throw new ApplicationException($"Error reading the Decimal value from {key} in {configFile} config file.", ex);
-				}
+				if (Decimal.TryParse(config.Elements.GetValue(key), out var val))
+					return val;
+			}
+			catch (Exception ex)
+			{
+				throw new ApplicationException($"Error reading the Decimal value from {key} in {configFile} config file.", ex);
 			}
 			// FALLBACK TO NORMAL WEB.CONFIG IF AVAILABLE
 			return ReadDecimalAppSettingFromDefaultStore(key);
@@ -843,8 +976,7 @@ namespace MediaFixer.Core.Configuration
 		{
 			try
 			{
-				Decimal val;
-				if (Decimal.TryParse(GetValue(key, typeof(String)) as String, out val))
+				if (Decimal.TryParse(GetValue(key, typeof(String)) as String, out var val))
 					return val;
 			}
 			catch (Exception ex)
@@ -866,15 +998,18 @@ namespace MediaFixer.Core.Configuration
 		{
 			try
 			{
-				String keyValue = ReadAppSetting(key);
+				var keyValue = ReadAppSetting(key);
 				if (keyValue != null)
 				{
-					Decimal val;
-					if (Decimal.TryParse(keyValue, out val))
+					if (Decimal.TryParse(keyValue, out var val))
 						return val;
 				}
 			}
-			catch { }
+			catch
+			{
+				// ignored
+			}
+
 			return defaultValue;
 		}
 
@@ -895,12 +1030,15 @@ namespace MediaFixer.Core.Configuration
 				var config = GetConfigSection<IKeyValueSection>(configFile);
 				if (config != null)
 				{
-					Decimal val;
-					if (Decimal.TryParse(config.Elements.GetValue(key), out val))
+					if (Decimal.TryParse(config.Elements.GetValue(key), out var val))
 						return val;
 				}
 			}
-			catch { }
+			catch
+			{
+				// ignored
+			}
+
 			// FALL BACK TO DEFAULT VALUE PROVIDED
 			return defaultValue;
 		}
@@ -926,8 +1064,7 @@ namespace MediaFixer.Core.Configuration
 				try
 				{
 					var keyValue = config.Elements.GetValue(key);
-					T val;
-					if (Enum.TryParse<T>(keyValue, out val))
+					if (Enum.TryParse<T>(keyValue, out var val))
 						return val;
 				}
 				catch (Exception ex)
@@ -950,8 +1087,7 @@ namespace MediaFixer.Core.Configuration
 			try
 			{
 				var keyValue = GetValue(key, typeof(String)) as String;
-				T val;
-				if (!Enum.TryParse<T>(keyValue, out val))
+				if (!Enum.TryParse<T>(keyValue, out var val))
 					throw new Exception();
 
 				return val;
@@ -973,11 +1109,13 @@ namespace MediaFixer.Core.Configuration
 			try
 			{
 				var keyValue = ReadAppSetting(key);
-				T val;
-				if (Enum.TryParse<T>(keyValue, out val))
+				if (Enum.TryParse<T>(keyValue, out var val))
 					return val;
 			}
-			catch { }
+			catch
+			{
+				// ignored
+			}
 
 			return defaultValue;
 		}
@@ -999,12 +1137,15 @@ namespace MediaFixer.Core.Configuration
 				var config = GetConfigSection<IKeyValueSection>(configFile);
 				if (config != null)
 				{
-					T val;
-					if (Enum.TryParse<T>(config.Elements.GetValue(key), out val))
+					if (Enum.TryParse<T>(config.Elements.GetValue(key), out var val))
 						return val;
 				}
 			}
-			catch { }
+			catch
+			{
+				// ignored
+			}
+
 			// FALLBACK TO DEFAULT VALUE PROVIDED
 			return defaultValue;
 		}

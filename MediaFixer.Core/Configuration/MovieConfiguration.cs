@@ -1,8 +1,7 @@
-﻿using System;
+﻿using MediaFixer.Core.IO;
+using System;
 using System.Collections.Generic;
-using MediaFixer.Core.Configuration;
 using MediaFixer.Core.Fixers;
-using MediaFixer.Core.IO;
 
 namespace MediaFixer.Core.Configuration
 {
@@ -12,6 +11,7 @@ namespace MediaFixer.Core.Configuration
 	/// </summary>
 	public interface IMovieConfiguration
 	{
+
 		/// <summary>
 		/// Gets the movie year regex.
 		/// </summary>
@@ -21,6 +21,14 @@ namespace MediaFixer.Core.Configuration
 		/// Gets the regular expression used to detect movie names.
 		/// </summary>
 		String MovieRegex { get; }
+
+		/// <summary>
+		/// Gets the characters to replace.
+		/// </summary>
+		/// <value>
+		/// The characters to replace.
+		/// </value>
+		List<String> CharactersToReplace { get; }
 	}
 
 	/// <summary>
@@ -67,22 +75,26 @@ namespace MediaFixer.Core.Configuration
 		}
 
 		/// <summary>
-		/// Gets the regular expression used to detect movie names.
+		/// Gets the characters to replace.
 		/// </summary>
-		public String MovieRegex => AppSettingsReader.ReadOptionalStringAppSetting(nameof(MovieRegex), @"(?<title>.*)(?<year>19\d{2}|20\d{2})");
-
-		/// <summary>
-		/// Gets the movie characters to remove.
-		/// </summary>
-		public List<String> MovieCharactersToRemove
+		/// <value>
+		/// The characters to replace.
+		/// </value>
+		public List<String> CharactersToReplace
 		{
 			get
 			{
-				var value = AppSettingsReader.ReadOptionalStringAppSetting(nameof(MovieCharactersToRemove), "[,],(,),.,1080p,");
+
+				var value = AppSettingsReader.ReadOptionalStringAppSetting(nameof(CharactersToReplace), "[,],{,},(,),~,`,.");
 				var list = value.Split(',');
 				return new List<String>(list);
 			}
 		}
+
+		/// <summary>
+		/// Gets the regular expression used to detect movie names.
+		/// </summary>
+		public String MovieRegex => AppSettingsReader.ReadOptionalStringAppSetting(nameof(MovieRegex), @"(?<title>.*)(?<year>19\d{2}|20\d{2})");
 
 		/// <summary>
 		/// Gets the movie year regex.
@@ -90,17 +102,12 @@ namespace MediaFixer.Core.Configuration
 		public String MovieYearRegex => AppSettingsReader.ReadOptionalStringAppSetting(nameof(MovieYearRegex), @"(19|20)\d{2}");
 
 		/// <summary>
-		/// Gets the movie quality markers.
+		/// Gets the movie size threshold.
 		/// </summary>
-		public List<String> MovieQualityMarkers
-		{
-			get
-			{
-				var value = AppSettingsReader.ReadOptionalStringAppSetting(nameof(MovieCharactersToRemove), "hevc,bdrip,Bluray,x264,h264,AC3,DTS,480p,720p,1080p");
-				var list = value.Split(',');
-				return new List<String>(list);
-			}
-		}
+		/// <value>
+		/// The movie size threshold.
+		/// </value>
+		public Int64 MovieSizeThreshold => AppSettingsReader.ReadOptionalInt64AppSetting(nameof(MovieSizeThreshold), 1);
 
 
 		#endregion PUBLIC ACCESSORS

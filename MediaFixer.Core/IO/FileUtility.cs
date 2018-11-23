@@ -222,7 +222,19 @@ namespace MediaFixer.Core.IO
 		/// <returns>Returns a <see cref="FileInfo"/> object for the specified file</returns>
 		public FileInfo GetFileInfo(String location)
 		{
-			return new FileInfo(location);
+			var file = new FileInfo(location);
+			return file;
+		}
+
+		/// <summary>
+		/// Gets the size of the file.
+		/// </summary>
+		/// <param name="location">The location.</param>
+		/// <returns></returns>
+		public Int64 GetFileSize(String location)
+		{
+			var file = GetFileInfo(location);
+			return file.Length;
 		}
 
 		/// <summary>

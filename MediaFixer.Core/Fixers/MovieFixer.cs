@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using System.Text.RegularExpressions;
+using MediaFixer.Core.Extensions;
 using MediaFixer.Core.IO;
 using MediaFixer.Core.Logging;
 using MediaFixer.Core.Models;
@@ -113,47 +114,70 @@ namespace MediaFixer.Core.Fixers
 			return null;
 		}
 
+		/// <summary>
+		/// Looks for the movie file in the specified location.
+		/// </summary>
+		/// <param name="input">The input.</param>
+		/// <returns></returns>
+		protected String FindMovieFile(String input)
+		{
+			try
+			{
+				var di = DirectoryUtility.GetDirectoryInfo(input);
+				var files = di.GetFiles();
+				foreach (var file in files)
+				{
+					
+				}
+			}
+			catch (Exception ex)
+			{
+				Logger.Error(ex);
+				throw;
+			}
+		}
+
 
 		#endregion PROTECTED METHODS
 
 		#region PUBLIC METHODS
 
 
-
 		/// <summary>
 		/// Parses the specified location.
 		/// </summary>
-		/// <param name="location">The location.</param>
+		/// <param name="name">The location.</param>
 		/// <returns></returns>
-		public MovieResult Parse(String location)
+		public MovieResult Parse(String name)
 		{
 			try
 			{
-				if (!DirectoryUtility.Exists(location))
-					throw new FileNotFoundException($"Couldn't find directory {location}");
-
-				var filename = DirectoryUtility.GetDirectoryName(location);
-
-				var match = MovieRegex.Match(filename);
+				var match = MovieRegex.Match(name);
 				if (!match.Success)
-					throw new Exception($"Regular expression couldn't match ${filename} using the regular expression {Settings.MovieRegex}");
+					throw new Exception($"Regular expression couldn't match ${name} using the regular expression {Settings.MovieRegex}");
 
 				var titleGroup = match.Groups["title"];
 				var yearGroup = match.Groups["year"];
 				
-
 				if (String.IsNullOrEmpty(titleGroup?.Value))
-					throw new Exception($"Regular expression couldn't match the title for ${filename} using the regular expression {Settings.MovieRegex}");
+					throw new Exception($"Regular expression couldn't match the title for ${name} using the regular expression {Settings.MovieRegex}");
 
 				if (String.IsNullOrEmpty(yearGroup?.Value))
-					throw new Exception($"Regular expression couldn't match the year for ${filename} using the regular expression {Settings.MovieRegex}");
+					throw new Exception($"Regular expression couldn't match the year for ${name} using the regular expression {Settings.MovieRegex}");
 
 				if (!Int32.TryParse(yearGroup.Value, out var year))
 					throw new Exception($"Couldn't parse the year \"${yearGroup.Value}\" because it is not a valid integer");
 
+
+				var title = titleGroup.Value;
+				foreach (var c in Settings.CharactersToReplace)
+					title = title.Replace(c, " ");
+
+				title = title.Replace("  ", " ").ToTitleCase();
+
 				return new MovieResult()
 				{
-					Title = titleGroup.Value.Replace("."," ").Trim(),
+					Title = title.Trim(),
 					Year = year
 				};
 			}
@@ -176,21 +200,15 @@ namespace MediaFixer.Core.Fixers
 					throw new FileNotFoundException($"Couldn't find directory {location}");
 
 				var di = DirectoryUtility.GetDirectoryInfo(location);
-				var filename = di.Name;
+				var parts = Parse(di.Name);
 
-				var match = MovieRegex.Match(filename);
-				if (!match.Success)
-					throw new Exception($"Regular expression couldn't match ${filename} using the regular expression {Settings.MovieRegex}");
+				if (String.IsNullOrEmpty(parts.Title))
+					throw new Exception($"Movie title could not be parsed correctly for folder {di.Name}");
 
-				var title = match.Groups["title"];
-				var year = match.Groups["year"];
+				if (!parts.Year.HasValue)
+					throw new Exception($"Movie year could not be parsed correctly for folder {di.Name}");
 
-				if(String.IsNullOrEmpty(title?.Value))
-					throw new Exception($"Regular expression couldn't match the title for ${filename} using the regular expression {Settings.MovieRegex}");
-
-				if (String.IsNullOrEmpty(year?.Value))
-					throw new Exception($"Regular expression couldn't match the year for ${filename} using the regular expression {Settings.MovieRegex}");
-
+				di.RenameTo($"{parts.Title} ({parts.Year.Value})");
 
 			}
 			catch (Exception ex)
