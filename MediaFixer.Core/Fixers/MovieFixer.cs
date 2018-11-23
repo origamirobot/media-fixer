@@ -1,6 +1,8 @@
 ﻿using MediaFixer.Core.Configuration;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using MediaFixer.Core.Extensions;
 using MediaFixer.Core.IO;
@@ -16,12 +18,14 @@ namespace MediaFixer.Core.Fixers
 	/// <seealso cref="IFixer" />
 	public interface IMovieFixer : IFixer
 	{
+
 		/// <summary>
 		/// Parses the specified location.
 		/// </summary>
 		/// <param name="location">The location.</param>
 		/// <returns></returns>
 		MovieResult Parse(String location);
+
 	}
 
 
@@ -115,20 +119,64 @@ namespace MediaFixer.Core.Fixers
 		}
 
 		/// <summary>
-		/// Looks for the movie file in the specified location.
+		/// Gets a list of every file under the specified directory that can be considered a movie file.
 		/// </summary>
-		/// <param name="input">The input.</param>
+		/// <param name="location">The location to search for movie files.</param>
 		/// <returns></returns>
-		protected String FindMovieFile(String input)
+		protected List<MovieResult> GetMovieFiles(String location)
 		{
 			try
 			{
-				var di = DirectoryUtility.GetDirectoryInfo(input);
-				var files = di.GetFiles();
+				var movies = new List<MovieResult>();
+				var files = DirectoryUtility.GetFiles(location);
 				foreach (var file in files)
 				{
-					
+					var fi = FileUtility.GetFileInfo(file);
+					if (!Settings.MovieFileTypes.Contains(fi.Extension))
+						continue;
+
+					var result = Parse(file);
+					result.Length = fi.Length;
+					result.Path = file;
+					movies.Add(result);
 				}
+
+				var folders = DirectoryUtility.GetDirectories(location);
+				foreach (var folder in folders)
+				{
+					var subMovies = GetMovieFiles(folder);
+					movies.AddRange(subMovies);
+				}
+				return movies;
+			}
+			catch (Exception ex)
+			{
+				Logger.Error(ex);
+				throw;
+			}
+		}
+
+		/// <summary>
+		/// Looks for the movie file in the specified location.
+		/// </summary>
+		/// <param name="location">The input.</param>
+		/// <returns></returns>
+		protected MovieResult FindMovieFile(String location)
+		{
+			try
+			{
+				var movies = GetMovieFiles(location);
+				
+				if (movies == null || movies.Count == 0)
+					throw new MovieNotFoundException($"Coldn't find a movie file in {location}");
+
+
+				// TODO: Parse for two part movies here
+				
+
+				// FIND THE LARGEST MOVIE FILE, IT SHOULD BE THE CORRECT ONE
+				var largest = movies.OrderByDescending(x => x.Length).First();
+				return largest;
 			}
 			catch (Exception ex)
 			{
@@ -208,8 +256,9 @@ namespace MediaFixer.Core.Fixers
 				if (!parts.Year.HasValue)
 					throw new Exception($"Movie year could not be parsed correctly for folder {di.Name}");
 
-				di.RenameTo($"{parts.Title} ({parts.Year.Value})");
 
+				DirectoryUtility.Mo
+				di.RenameTo($"{parts.Title} ({parts.Year.Value})");
 			}
 			catch (Exception ex)
 			{
@@ -238,6 +287,5 @@ namespace MediaFixer.Core.Fixers
 
 
 	}
-
 
 }

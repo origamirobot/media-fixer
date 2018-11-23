@@ -29,6 +29,11 @@ namespace MediaFixer.Core.Configuration
 		/// The characters to replace.
 		/// </value>
 		List<String> CharactersToReplace { get; }
+
+		/// <summary>
+		/// Gets the file types supported by the <see cref="IMovieFixer"/>.
+		/// </summary>
+		List<String> MovieFileTypes { get; }
 	}
 
 	/// <summary>
@@ -68,7 +73,7 @@ namespace MediaFixer.Core.Configuration
 		{
 			get
 			{
-				var value = AppSettingsReader.ReadOptionalStringAppSetting(nameof(MovieFileTypes), "mkv,iso,mov,avi,m4v,mpg");
+				var value = AppSettingsReader.ReadOptionalStringAppSetting(nameof(MovieFileTypes), "mkv,iso,mov,avi,m4v,mpg,wmp");
 				var list = value.Split(',');
 				return new List<String>(list);
 			}

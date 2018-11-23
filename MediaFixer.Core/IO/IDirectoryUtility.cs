@@ -454,6 +454,22 @@ namespace MediaFixer.Core.IO
 		/// <param name="path">The path.</param>
 		/// <returns></returns>
 		String GetDirectoryName(String path);
+
+		/// <summary>
+		/// Renames this directory to something else.
+		/// </summary>
+		/// <param name="di">The di.</param>
+		/// <param name="name">The name.</param>
+		/// <exception cref="System.ArgumentNullException">di - Directory info to rename cannot be null</exception>
+		/// <exception cref="System.ArgumentException">New name cannot be null or blank - name</exception>
+		void Rename(DirectoryInfo di, String name);
+
+		/// <summary>
+		/// Renames the specified location.
+		/// </summary>
+		/// <param name="location">The location.</param>
+		/// <param name="name">The name.</param>
+		void Rename(String location, String name);
 	}
 
 }
