@@ -36,6 +36,14 @@ namespace MediaFixer.Core.Fixers
 	public class MovieFixer : IMovieFixer
 	{
 
+		#region PRIVATE PROPERTIES
+
+
+		private String _entryDirectory;
+
+
+		#endregion PRIVATE PROPERTIES
+
 		#region PROTECTED PROPERTIES
 
 
@@ -145,6 +153,7 @@ namespace MediaFixer.Core.Fixers
 			try
 			{
 				var movies = new List<MovieResult>();
+				var parent = DirectoryUtility.GetDirectoryInfo(_entryDirectory);
 				var files = DirectoryUtility.GetFiles(location);
 				foreach (var file in files)
 				{
@@ -165,7 +174,8 @@ namespace MediaFixer.Core.Fixers
 					if (disqualified)
 						continue;
 
-					var result = Parse(fi.Name);
+
+					var result = Parse(parent.Name);
 					result.Length = fi.Length;
 					result.Path = file;
 					result.Extension = fi.Extension;
@@ -196,6 +206,7 @@ namespace MediaFixer.Core.Fixers
 		{
 			try
 			{
+				_entryDirectory = location;
 				var movies = GetMovieFiles(location);
 				
 				if (movies == null || movies.Count == 0)
@@ -296,7 +307,9 @@ namespace MediaFixer.Core.Fixers
 
 				if (di.Name == fixedName)
 				{
+					Console.WriteLine("");
 					Console.WriteLine($"      ALREADY FIXED!", ConsoleColor.Green);
+					Console.WriteLine("");
 					return;
 				}
 
@@ -325,7 +338,9 @@ namespace MediaFixer.Core.Fixers
 				Console.Write("    - 5/5) Removed directory ", textColor);
 				Console.WriteLine(di.FullName, varColor);
 
+				Console.WriteLine("");
 				Console.WriteLine($"      DONE!", ConsoleColor.Green);
+				Console.WriteLine("");
 			}
 			catch (Exception ex)
 			{

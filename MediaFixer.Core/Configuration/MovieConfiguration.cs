@@ -78,7 +78,7 @@ namespace MediaFixer.Core.Configuration
 		{
 			get
 			{
-				var value = AppSettingsReader.ReadOptionalStringAppSetting(nameof(MovieFileTypes), ".mkv,.iso,.mov,.avi,.m4v,.mpg,.wmp");
+				var value = AppSettingsReader.ReadOptionalStringAppSetting(nameof(MovieFileTypes), ".mkv,.iso,.mov,.avi,.m4v,.mp4,.mpg,.wmp,.img");
 				var list = value.Split(',');
 				return new List<String>(list);
 			}

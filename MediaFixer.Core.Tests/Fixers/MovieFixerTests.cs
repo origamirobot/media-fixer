@@ -5,6 +5,7 @@ using MediaFixer.Core.Configuration;
 using MediaFixer.Core.Fixers;
 using MediaFixer.Core.IO;
 using MediaFixer.Core.Logging;
+using MediaFixer.Core.Terminal;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
@@ -22,6 +23,8 @@ namespace MediaFixer.Core.Tests.Fixers
 		protected Mock<ILogger> Logger { get; set; }
 		protected Mock<IFileUtility> FileUtility { get; set; }
 		protected Mock<IDirectoryUtility> DirectoryUtility { get; set; }
+		protected Mock<IPathUtility> PathUtility { get; set; }
+		protected Mock<IConsole> Console { get; set; }
 		protected MovieFixer MovieFixer { get; set; }
 
 
@@ -37,10 +40,12 @@ namespace MediaFixer.Core.Tests.Fixers
 			Logger = new Mock<ILogger>();
 			FileUtility = new Mock<IFileUtility>();
 			DirectoryUtility = new Mock<IDirectoryUtility>();
+			PathUtility = new Mock<IPathUtility>();
+			Console = new Mock<IConsole>();
 			Settings.Setup(x => x.MovieRegex).Returns(@"(?<title>.*)(?<year>19\d{2}|20\d{2})");
 			Settings.Setup(x => x.MovieYearRegex).Returns(@"(19|20)\d{2}");
 			Settings.Setup(x => x.CharactersToReplace).Returns(new List<String>() {"[", "]", "{", "}", "(", ")", "~", "`", "."});
-			MovieFixer = new MovieFixer(Settings.Object, Logger.Object, DirectoryUtility.Object, FileUtility.Object);
+			MovieFixer = new MovieFixer(Settings.Object, Logger.Object, DirectoryUtility.Object, FileUtility.Object, PathUtility.Object, Console.Object);
 		}
 
 

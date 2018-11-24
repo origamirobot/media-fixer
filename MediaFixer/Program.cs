@@ -55,9 +55,8 @@ namespace MediaFixer
 			Console.Clear();
 			var banner1 = new ConsoleBanner("MEDIA FIXER", "Arial", 8, FontStyle.Bold, 150, 14) { ForeColor = ConsoleColor.Blue, Pallet = new Char[] { '#', '%', 'M', 'V', 'l', ',', '.', ' ' } };
 			banner1.Execute();
-
-
-			var folders = DirectoryUtility.GetDirectories("C:\\Downloads\\complete");
+			
+			var folders = DirectoryUtility.GetDirectories(Environment.CurrentDirectory);
 			foreach (var folder in folders)
 			{
 				MovieFixer.Fix(folder);
