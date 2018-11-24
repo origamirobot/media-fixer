@@ -34,6 +34,11 @@ namespace MediaFixer.Core.Configuration
 		/// Gets the file types supported by the <see cref="IMovieFixer"/>.
 		/// </summary>
 		List<String> MovieFileTypes { get; }
+
+		/// <summary>
+		/// Gets the disqualifying names.
+		/// </summary>
+		List<String> DisqualifyingNames { get; }
 	}
 
 	/// <summary>
@@ -73,7 +78,7 @@ namespace MediaFixer.Core.Configuration
 		{
 			get
 			{
-				var value = AppSettingsReader.ReadOptionalStringAppSetting(nameof(MovieFileTypes), "mkv,iso,mov,avi,m4v,mpg,wmp");
+				var value = AppSettingsReader.ReadOptionalStringAppSetting(nameof(MovieFileTypes), ".mkv,.iso,.mov,.avi,.m4v,.mpg,.wmp");
 				var list = value.Split(',');
 				return new List<String>(list);
 			}
@@ -91,6 +96,20 @@ namespace MediaFixer.Core.Configuration
 			{
 
 				var value = AppSettingsReader.ReadOptionalStringAppSetting(nameof(CharactersToReplace), "[,],{,},(,),~,`,.");
+				var list = value.Split(',');
+				return new List<String>(list);
+			}
+		}
+
+		/// <summary>
+		/// Gets the disqualifying names.
+		/// </summary>
+		public List<String> DisqualifyingNames
+		{
+			get
+			{
+
+				var value = AppSettingsReader.ReadOptionalStringAppSetting(nameof(DisqualifyingNames), "sample");
 				var list = value.Split(',');
 				return new List<String>(list);
 			}

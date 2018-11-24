@@ -8,6 +8,7 @@ using MediaFixer.Core.Extensions;
 using MediaFixer.Core.IO;
 using MediaFixer.Core.Logging;
 using MediaFixer.Core.Models;
+using MediaFixer.Core.Terminal;
 
 namespace MediaFixer.Core.Fixers
 {
@@ -68,6 +69,16 @@ namespace MediaFixer.Core.Fixers
 		/// </summary>
 		protected IFileUtility FileUtility { get; private set; }
 
+		/// <summary>
+		/// Gets the path utility.
+		/// </summary>
+		protected IPathUtility PathUtility { get; private set; }
+
+		/// <summary>
+		/// Gets the console.
+		/// </summary>
+		protected IConsole Console { get; private set; }
+
 
 		#endregion PROTECTED PROPERTIES
 
@@ -81,16 +92,22 @@ namespace MediaFixer.Core.Fixers
 		/// <param name="logger">The logger.</param>
 		/// <param name="directoryUtility">The directory utility.</param>
 		/// <param name="fileUtility">The file utility.</param>
+		/// <param name="pathUtility">The path utility.</param>
+		/// <param name="console">The console.</param>
 		public MovieFixer(
 			IMovieConfiguration settings, 
 			ILogger logger, 
 			IDirectoryUtility directoryUtility, 
-			IFileUtility fileUtility)
+			IFileUtility fileUtility, 
+			IPathUtility pathUtility, 
+			IConsole console)
 		{
 			Settings = settings;
 			Logger = logger;
 			DirectoryUtility = directoryUtility;
 			FileUtility = fileUtility;
+			PathUtility = pathUtility;
+			Console = console;
 			YearRegex = new Regex(Settings.MovieYearRegex);
 			MovieRegex = new Regex(Settings.MovieRegex);
 		}
@@ -135,9 +152,23 @@ namespace MediaFixer.Core.Fixers
 					if (!Settings.MovieFileTypes.Contains(fi.Extension))
 						continue;
 
-					var result = Parse(file);
+					var disqualified = false;
+					foreach (var word in Settings.DisqualifyingNames)
+					{
+						if (!fi.Name.Contains(word))
+							continue;
+
+						disqualified = true;
+						break;
+					}
+
+					if (disqualified)
+						continue;
+
+					var result = Parse(fi.Name);
 					result.Length = fi.Length;
 					result.Path = file;
+					result.Extension = fi.Extension;
 					movies.Add(result);
 				}
 
@@ -240,51 +271,72 @@ namespace MediaFixer.Core.Fixers
 		/// Fixes the directory.
 		/// </summary>
 		/// <param name="location">The location.</param>
-		public void FixDirectory(String location)
+		public void Fix(String location)
 		{
 			try
 			{
+				var textColor = ConsoleColor.DarkGray;
+				var varColor = ConsoleColor.Blue;
+
+				Console.Write("Parsing ", ConsoleColor.White);
+				Console.WriteLine(location, varColor);
+
 				if (!DirectoryUtility.Exists(location))
 					throw new FileNotFoundException($"Couldn't find directory {location}");
 
 				var di = DirectoryUtility.GetDirectoryInfo(location);
-				var parts = Parse(di.Name);
 
-				if (String.IsNullOrEmpty(parts.Title))
-					throw new Exception($"Movie title could not be parsed correctly for folder {di.Name}");
-
-				if (!parts.Year.HasValue)
-					throw new Exception($"Movie year could not be parsed correctly for folder {di.Name}");
+				if (di.Parent == null)
+					throw new FileNotFoundException($"Couldn't find a parent directory for {location}");
 
 
-				DirectoryUtility.Mo
-				di.RenameTo($"{parts.Title} ({parts.Year.Value})");
+				var movie = FindMovieFile(location);
+				var fixedName = $"{movie.Title} ({movie.Year})";
+				var fixedFile = $"{fixedName}{movie.Extension}";
+
+				if (di.Name == fixedName)
+				{
+					Console.WriteLine($"      ALREADY FIXED!", ConsoleColor.Green);
+					return;
+				}
+
+				Console.Write($"    - 1/5) Found movie file at ", textColor);
+				Console.WriteLine(movie.Path, varColor);
+
+
+				Console.Write("    - 2/5) New movie title is ", textColor);
+				Console.WriteLine(fixedName, varColor);
+
+
+				var path = PathUtility.Combine(di.Parent.FullName, fixedName);
+				DirectoryUtility.CreateDirectory(path);
+
+				Console.Write("    - 3/5) Created new directory ", textColor);
+				Console.WriteLine(path, varColor);
+
+				var destination = Path.Combine(di.Parent.FullName, fixedName, fixedFile);
+				FileUtility.Move(movie.Path, destination);
+
+				Console.Write($"    - 4/5) Movied movie file to ", textColor);
+				Console.WriteLine(path, varColor);
+
+				DirectoryUtility.Delete(di.FullName, true);
+
+				Console.Write("    - 5/5) Removed directory ", textColor);
+				Console.WriteLine(di.FullName, varColor);
+
+				Console.WriteLine($"      DONE!", ConsoleColor.Green);
 			}
 			catch (Exception ex)
 			{
 				Logger.Error(ex);
-			}
-		}
-
-		/// <summary>
-		/// Fixes the file.
-		/// </summary>
-		/// <param name="location">The location.</param>
-		public void FixFile(String location)
-		{
-			try
-			{
-
-			}
-			catch (Exception ex)
-			{
-				Logger.Error(ex);
+				Console.Write($"    - ERROR - ", ConsoleColor.Red);
+				Console.WriteLine(ex.Message, ConsoleColor.DarkRed);
 			}
 		}
 
 
 		#endregion PUBLIC METHODS
-
 
 	}
 

@@ -13,13 +13,7 @@ namespace MediaFixer.Core.Fixers
 		/// Fixes the specified directory.
 		/// </summary>
 		/// <param name="location">The location.</param>
-		void FixDirectory(String location);
-
-		/// <summary>
-		/// Fixes the specified file.
-		/// </summary>
-		/// <param name="location">The location.</param>
-		void FixFile(String location);
+		void Fix(String location);
 
 	}
 

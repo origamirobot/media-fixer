@@ -57,7 +57,7 @@
     <Compile Include="Configuration\KeyValueSection.cs" />
     <Compile Include="Configuration\MediaFixerConfiguration.cs" />
     <Compile Include="Configuration\MovieConfiguration.cs" />
-    <Compile Include="Extensions\DirectoryInfoExtensions.cs" />
+    <Compile Include="Exceptions\MovieNotFoundException.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Fixers\IFixer.cs" />
     <Compile Include="Fixers\MovieFixer.cs" />
@@ -73,6 +73,7 @@
     <Compile Include="Models\MovieResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Terminal\Banner.cs" />
+    <Compile Include="Terminal\ConsoleWrapper.cs" />
     <Compile Include="Terminal\Menu.cs" />
     <Compile Include="Terminal\Selector.cs" />
   </ItemGroup>

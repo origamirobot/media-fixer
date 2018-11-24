@@ -1,10 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using MediaFixer.Core.Fixers;
+using MediaFixer.Core.IO;
+using MediaFixer.Core.Terminal;
+using Ninject;
 
 namespace MediaFixer
 {
@@ -16,54 +21,51 @@ namespace MediaFixer
 	{
 
 		/// <summary>
+		/// Gets or sets the dependency injection kernel.
+		/// </summary>
+		private static IKernel Kernel { get; set; }
+
+		/// <summary>
+		/// Gets or sets the directory utility.
+		/// </summary>
+		private static IDirectoryUtility DirectoryUtility { get; set; }
+
+		/// <summary>
+		/// Gets or sets the movie fixer.
+		/// </summary>
+		private static IMovieFixer MovieFixer { get; set; }
+
+
+		/// <summary>
 		/// Entry-point into this application.
 		/// </summary>
 		/// <param name="args">The arguments.</param>
-		static void Main(String[] args)
+		private static void Main(String[] args)
 		{
-			var pattern = "(.*)([19,20]\\d{3,})";
-			var regex = new Regex(pattern);
+			Kernel = new StandardKernel();
+			Bootstrapper.Register(Kernel);
+			DirectoryUtility = Kernel.Get<IDirectoryUtility>();
+			MovieFixer = Kernel.Get<IMovieFixer>();
 
-			//var currentFolder = @"C:\Users\Chris\Desktop\TestFolder";
-			var currentFolder = Environment.CurrentDirectory;
-			var folders = Directory.GetDirectories(currentFolder);
+			Console.SetWindowSize(Console.LargestWindowWidth, Console.LargestWindowHeight);
+
+
+
+			start:
+			Console.Clear();
+			var banner1 = new ConsoleBanner("MEDIA FIXER", "Arial", 8, FontStyle.Bold, 150, 14) { ForeColor = ConsoleColor.Blue, Pallet = new Char[] { '#', '%', 'M', 'V', 'l', ',', '.', ' ' } };
+			banner1.Execute();
+
+
+			var folders = DirectoryUtility.GetDirectories("C:\\Downloads\\complete");
 			foreach (var folder in folders)
 			{
-				var dir = new DirectoryInfo(folder);
-				var match = regex.Match(dir.Name);
-				if (match.Groups.Count < 2)
-					continue;
-
-				var movieName = RemoveChars(match.Groups[1].Value);
-				var year = match.Groups[2].Value;
-
-				var newName = $"{movieName} ({year})";
-				var newFullPath = Path.Combine(dir.Parent.FullName, newName);
-
-				Console.ForegroundColor = ConsoleColor.White;
-				Console.Write("Renaming ");
-				Console.ForegroundColor = ConsoleColor.Blue;
-				Console.Write(dir.Name);
-				Console.ForegroundColor = ConsoleColor.White;
-				Console.Write(" to ");
-				Console.ForegroundColor = ConsoleColor.Cyan;
-				Console.WriteLine(newName);
-
-				if(dir.FullName != newFullPath)
-					Directory.Move(dir.FullName, newFullPath);
+				MovieFixer.Fix(folder);
 			}
+
 			Console.ReadLine();
+
 		}
 
-		static String RemoveChars(String text)
-		{
-			text = text.Replace(".", " ")
-				.Replace("_", " ")
-				.Replace("(", "")
-				.Replace(")", "")
-				.Trim();
-			return text;
-		}
-			
 	}
 }

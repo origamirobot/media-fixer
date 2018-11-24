@@ -25,6 +25,11 @@ namespace MediaFixer.Core.Models
 		public String Path { get; set; }
 
 		/// <summary>
+		/// Gets or sets the extension.
+		/// </summary>
+		public String Extension { get; set; }
+
+		/// <summary>
 		/// Gets or sets the length.
 		/// </summary>
 		public Int64 Length { get; set; }
