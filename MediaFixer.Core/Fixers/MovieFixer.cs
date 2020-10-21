@@ -9,6 +9,7 @@ using MediaFixer.Core.IO;
 using MediaFixer.Core.Logging;
 using MediaFixer.Core.Models;
 using MediaFixer.Core.Terminal;
+using System.Security.Cryptography.X509Certificates;
 
 namespace MediaFixer.Core.Fixers
 {
@@ -299,6 +300,13 @@ namespace MediaFixer.Core.Fixers
 
 				if (di.Parent == null)
 					throw new FileNotFoundException($"Couldn't find a parent directory for {location}");
+
+				if (location.ToLower().Contains("_unpack"))
+				{
+					Console.WriteLine("Skipping unpack directory");
+					return;
+				}
+					
 
 
 				var movie = FindMovieFile(location);

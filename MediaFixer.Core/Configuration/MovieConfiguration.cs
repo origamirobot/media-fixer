@@ -108,8 +108,7 @@ namespace MediaFixer.Core.Configuration
 		{
 			get
 			{
-
-				var value = AppSettingsReader.ReadOptionalStringAppSetting(nameof(DisqualifyingNames), "sample");
+				var value = AppSettingsReader.ReadOptionalStringAppSetting(nameof(DisqualifyingNames), "sample, _unpack");
 				var list = value.Split(',');
 				return new List<String>(list);
 			}
